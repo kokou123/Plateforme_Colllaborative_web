@@ -1,0 +1,66 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Permission\Traits\HasRoles;
+
+class User extends Authenticatable
+{
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+
+    protected $fillable = [
+        'nom',
+        'prenom',
+        'email',
+        'password',
+        'photo'
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token'
+    ];
+
+        public function equipe()
+        {
+            return $this->belongsTo(Equipe::class);
+        }
+        public function projets()
+        {
+            return $this->belongsToMany(Projet::class);
+        }
+
+        public function projetsCrees()
+        {
+            return $this->hasMany(Projet::class, 'chef_projet_id');
+        }
+
+        public function taches()
+        {
+            return $this->hasMany(Tache::class, 'assigned_to');
+        }
+
+        public function documents()
+        {
+            return $this->hasMany(Document::class);
+        }
+
+        public function commentaires()
+        {
+            return $this->hasMany(Commentaire::class);
+        }
+
+        public function notifications()
+        {
+            return $this->hasMany(Notification::class);
+        }
+
+        public function auditLogs()
+        {
+            return $this->hasMany(AuditLog::class);
+        }
+}
