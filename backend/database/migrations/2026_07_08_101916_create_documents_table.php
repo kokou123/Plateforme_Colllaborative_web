@@ -21,7 +21,7 @@ return new class extends Migration
 
         $table->string('chemin');
 
-        $table->bigInteger('taille');
+        $table->unsignedBigInteger('taille');
 
         $table->foreignId('projet_id')
             ->constrained()

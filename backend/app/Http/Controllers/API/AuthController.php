@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-
+use App\Services\AuditLogService;
 
 class AuthController extends Controller
 {
@@ -39,6 +39,14 @@ class AuthController extends Controller
             'roles'=>$user->getRoleNames()
         ],200);
 
+        AuditLogService::enregistrer(
+        auth()->id(),
+        'Connexion',
+        'Authentification',
+        null,
+        'Connexion réussie.'
+    );
+
     }
 
     /**
@@ -59,6 +67,15 @@ class AuthController extends Controller
         return response()->json([
             'message'=>'Déconnexion réussie.'
         ]);
+
+        AuditLogService::enregistrer(
+        auth()->id(),
+        'Déconnexion',
+        'Authentification',
+        null,
+        'Déconnexion.'
+    );
     }
+    
 
 }

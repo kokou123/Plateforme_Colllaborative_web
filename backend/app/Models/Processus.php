@@ -3,17 +3,33 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Processus extends Model
 {
-    protected $fillable = 
-    [
+    protected $table = 'processus';
+
+    protected $fillable = [
+
+        'projet_id',
+
         'nom',
-        'description'
-        
+
+        'description',
+
+        'statut'
+
     ];
-    public function etapes()
+
+    public function projet(): BelongsTo
     {
-        return $this->hasMany(EtapeProcessus::class);
+        return $this->belongsTo(Projet::class);
+    }
+
+    public function etapes(): HasMany
+    {
+        return $this->hasMany(EtapeProcessus::class)
+                    ->orderBy('ordre');
     }
 }

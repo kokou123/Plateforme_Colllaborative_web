@@ -11,6 +11,7 @@ use App\Models\Equipe;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\AjouterMembreEquipeRequest;
+use App\Services\AuditLogService;
 
 class EquipeController extends Controller 
 {
@@ -27,6 +28,14 @@ class EquipeController extends Controller
     public function store(StoreEquipeRequest $request)
     {
         $equipe = Equipe::create($request->validated());
+
+        AuditLogService::enregistrer(
+        auth()->id(),
+        'Création',
+        'Equipe',
+        $equipe->id,
+        "Création de l'équipe {$equipe->nom}."
+        );
 
         return response()->json([
             'success' => true,
@@ -46,6 +55,13 @@ class EquipeController extends Controller
     public function update(UpdateEquipeRequest $request, Equipe $equipe)
     {
         $equipe->update($request->validated());
+        AuditLogService::enregistrer(
+        auth()->id(),
+        'Modification',
+        'Equipe',
+        $equipe->id,
+        "Modification de l'équipe {$equipe->nom}."
+        );
 
         return response()->json([
             'success' => true,
@@ -59,6 +75,13 @@ class EquipeController extends Controller
             ->update(['equipe_id' => null]);
 
         $equipe->delete();
+        AuditLogService::enregistrer(
+        auth()->id(),
+        'Suppresion',
+        'Equipe',
+        $equipe->id,
+        "Suppression de l'équipe {$equipe->nom}."
+    );
 
         return response()->json([
             'success' => true,

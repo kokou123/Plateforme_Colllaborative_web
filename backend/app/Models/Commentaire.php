@@ -32,16 +32,25 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Commentaire extends Model
 {
-    protected $fillable = ['contenu', 'user_id','tache_id'];
+    protected $fillable = ['contenu', 'user_id','tache_id', 'parent_id'];
 
-    public function auteur(): BelongsTo
+    public function utilisateur()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function commentable(): MorphTo
+    public function tache()
     {
-        return $this->morphTo();
+        return $this->belongsTo(Tache::class);
     }
+    public function parent()
+    {
+        return $this->belongsTo(Commentaire::Class, 'parent_id');
+    }
+    public function reponses()
+    {
+        return $this->hasMany(Commentaire::Class, 'parent_id');
+    }
+    
 }
 

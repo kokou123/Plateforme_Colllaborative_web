@@ -23,7 +23,7 @@ return new class extends Migration
             $table->foreignId('tache_id')
                 ->constrained()
                 ->cascadeOndelete();
-                $table->timestamps();
+            $table->timestamps();
         });
     }
 

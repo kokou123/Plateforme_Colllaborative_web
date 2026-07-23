@@ -16,10 +16,6 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
 
-            $table->foreignId('chef_projet_id')
-                ->constrained('users')
-                ->cascadeOnDelete();
-
             $table->string('nom');
 
             $table->text('description')->nullable();

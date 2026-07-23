@@ -9,9 +9,10 @@ class Equipe extends Model
     protected $fillable = [
         'nom',
         'description',
+        'equipe_id'
     ];
     public function utilisateurs()
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(User::class, 'equipe_id');
     }
 }

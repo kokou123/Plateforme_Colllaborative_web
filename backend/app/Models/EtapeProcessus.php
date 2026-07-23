@@ -3,23 +3,32 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EtapeProcessus extends Model
 {
-    protected $fillable = 
-    [
+    protected $table = 'etape_processus';
+
+    protected $fillable = [
+
+        'processus_id',
+
         'nom',
-        'user_id',
+
         'ordre',
-        'description',
-        'processus_id'
+
+        'statut',
+
+        'date_debut',
+
+        'date_fin',
+
+        'commentaire'
+
     ];
-    public function processus()
+
+    public function processus(): BelongsTo
     {
         return $this->belongsTo(Processus::class);
-    }
-    public function validateur()
-    {
-        return $this->belongsTo(User::class, 'user_id');
     }
 }

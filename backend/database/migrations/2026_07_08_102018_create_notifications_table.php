@@ -20,7 +20,7 @@ return new class extends Migration
 
             $table->boolean('lu')->default(false);
 
-            $table->dateTime('date_envoi');
+            $table->string('lien')->nullable();
 
             $table->foreignId('user_id')
                 ->constrained()

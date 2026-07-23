@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
+use App\Services\AuditLogService;
 
 class UserController
 {
@@ -43,6 +44,14 @@ class UserController
                 'password' => Hash::make($request->password),
             ]);
 
+            AuditLogService::enregistrer(
+            auth()->id(),
+            'Création',
+            'Utilisateur',
+            $user->id,
+            "Création de {$user->nom} {$user->prenom}"
+        );
+
             $user->assignRole($request->role);
 
             return response()->json([
@@ -67,6 +76,13 @@ class UserController
             'email' => $request->email,
             'photo' => $photo,
         ]);
+        AuditLogService::enregistrer(
+        auth()->id(),
+        'Modification',
+        'Utilisateur',
+        $user->id,
+        "Modification de {$user->nom}"
+    );
 
         $user->syncRoles([$request->role]);
 
@@ -83,7 +99,13 @@ class UserController
     public function destroy(User $user)
     {
         $user->delete();
-
+        AuditLogService::enregistrer(
+        auth()->id(),
+        'Suppression',
+        'Utilisateur',
+        $user->id,
+        "Suppression de {$user->nom}"
+    );
         return response()->json([
             'success' => true,
             'message' => 'Utilisateur supprimé avec succès.'

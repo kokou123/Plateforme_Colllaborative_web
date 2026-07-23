@@ -3,88 +3,166 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreDocumentRequest;
+use App\Http\Requests\UpdateDocumentRequest;
+use App\Http\Resources\DocumentResource;
 use App\Models\Document;
-use App\Models\Projet;
-use Illuminate\Http\Request;
+use App\Models\VersionDocument;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use App\Services\AuditLogService;
 
 class DocumentController extends Controller
 {
-    // Liste des documents d'un projet
-    public function index(Projet $projet)
+    /**
+     * Liste des documents.
+     */
+    public function index()
     {
-        $documents = $projet->documents()->with('utilisateur:id,nom,prenom')->latest()->get();
+        $documents = Document::with([
+            'projet',
+            'utilisateur',
+            'versions'
+        ])->get();
 
         return response()->json([
-            'documents' => $documents,
+            'success' => true,
+            'data' => DocumentResource::collection($documents)
         ]);
-        
     }
 
-    // Upload d'un nouveau document
-    public function store(Request $request, Projet $projet)
+    /**
+     * Déposer un document.
+     */
+    public function store(StoreDocumentRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'fichier' => ['required', 'file', 'max:10240'], // 10 Mo max
-        ]);
+        $fichier = $request->file('document');
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Erreur de validation',
-                'errors'  => $validator->errors(),
-            ], 422);
-        }
-
-        $fichier = $request->file('fichier');
-        $chemin  = $fichier->store('documents/' . $projet->id, 'local');
+        $chemin = $fichier->store('documents', 'public');
 
         $document = Document::create([
-            'nom'       => $fichier->getClientOriginalName(),
-            'type'      => $fichier->getClientMimeType(),
-            'taille'    => $fichier->getSize(),
-            'chemin'    => $chemin,
-            'projet_id' => $projet->id,
-            'user_id'   => $request->user()->id,
+
+            'nom' => $request->nom,
+
+            'chemin' => $chemin,
+
+            'type' => $fichier->getClientOriginalExtension(),
+
+            'taille' => $fichier->getSize(),
+
+            'projet_id' => $request->projet_id,
+
+            'user_id' => auth()->id(),
+
         ]);
 
+        VersionDocument::create([
+
+        'document_id' => $document->id,
+
+        'user_id' => auth()->id(),
+
+        'numero' => 1,
+
+        'chemin' => $chemin,
+
+        'type' => $fichier->getClientOriginalExtension(),
+
+        'taille' => $fichier->getSize(),
+
+        'commentaire' => 'Version initiale',
+
+        ]);
+
+        AuditLogService::enregistrer(
+        auth()->id(),
+        'Ajout',
+        'Document',
+        $document->id,
+        "Ajout du document {$document->nom}."
+        );
         return response()->json([
-            'message'  => 'Document ajouté avec succès',
-            'document' => $document,
+            'success' => true,
+            'message' => 'Document ajouté avec succès.',
+            'data' => new DocumentResource(
+                $document->load('projet', 'utilisateur')
+            )
         ], 201);
     }
 
-    // Détails d'un document
-    public function show(Document $document)
+    /**
+     * Modifier un document.
+     */
+    public function update(UpdateDocumentRequest $request, Document $document)
     {
+        $document->update($request->validated());
+
+        AuditLogService::enregistrer(
+        auth()->id(),
+        'Modification',
+        'Document',
+        $document->id,
+        "Modification du document {$document->nom}."
+        );
+
         return response()->json([
-            'document' => $document->load('utilisateur:id,nom,prenom', 'projet:id,nom'),
+            'success' => true,
+            'message' => 'Document modifié.',
+            'data' => new DocumentResource(
+                $document->fresh()->load('projet', 'utilisateur')
+            )
         ]);
     }
 
-    // Téléchargement du fichier
+    /**
+     * Supprimer un document.
+     */
+    public function destroy(Document $document)
+    {
+        if (Storage::disk('public')->exists($document->chemin)) {
+
+            Storage::disk('public')->delete($document->chemin);
+        }
+        foreach ($document->versions as $version) {
+
+        if (Storage::disk('public')->exists($version->chemin)) {
+
+            Storage::disk('public')->delete($version->chemin);
+
+        }
+
+        }
+        $document->delete();
+        AuditLogService::enregistrer(
+        auth()->id(),
+        'Suppression',
+        'Document',
+        $document->id,
+        "Suppression du document {$document->nom}."
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Document supprimé avec succès.'
+        ]);
+    }
+
+    /**
+     * Télécharger un document.
+     */
     public function download(Document $document)
     {
-        if (! Storage::disk('local')->exists($document->chemin)) {
+        if (!Storage::disk('public')->exists($document->chemin)) {
+
             return response()->json([
-                'message' => 'Fichier introuvable',
+                'success' => false,
+                'message' => 'Fichier introuvable.'
             ], 404);
         }
 
-        return Storage::disk('local')->download($document->chemin, $document->nom);
-    }
-
-    // Suppression d'un document
-    public function destroy(Document $document)
-    {
-        if (Storage::disk('local')->exists($document->chemin)) {
-            Storage::disk('local')->delete($document->chemin);
-        }
-
-        $document->delete();
-
-        return response()->json([
-            'message' => 'Document supprimé avec succès',
-        ]);
+        return Storage::disk('public')->download(
+            $document->chemin,
+            $document->nom . '.' . $document->type
+        );
     }
 }

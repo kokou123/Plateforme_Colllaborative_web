@@ -17,7 +17,8 @@ class User extends Authenticatable
         'prenom',
         'email',
         'password',
-        'photo'
+        'photo',
+        'equipe_id'
     ];
 
     protected $hidden = [
@@ -39,7 +40,7 @@ class User extends Authenticatable
             return $this->hasMany(Projet::class, 'chef_projet_id');
         }
 
-        public function taches()
+        public function tachesAssignees()
         {
             return $this->hasMany(Tache::class, 'assigned_to');
         }
@@ -62,5 +63,13 @@ class User extends Authenticatable
         public function auditLogs()
         {
             return $this->hasMany(AuditLog::class);
+        }
+        public function historiques()
+        {
+            return $this->hasMany(HistoriqueStatut::class);
+        }
+        public function permissions() 
+        {
+            return $this->hasMany(DocumentPermission::class);
         }
 }

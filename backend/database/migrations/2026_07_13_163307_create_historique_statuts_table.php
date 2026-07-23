@@ -11,24 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('etape_processuses', function (Blueprint $table) {
+        Schema::create('historique_statuts', function (Blueprint $table) {
+
             $table->id();
 
-            $table->string('nom');
-
-            $table->text('description')->nullable();
-
-            $table->integer('ordre');
+            $table->foreignId('tache_id')
+                ->constrained()
+                ->cascadeOnDelete();
 
             $table->foreignId('user_id')
                 ->constrained()
                 ->cascadeOnDelete();
 
-            $table->foreignId('processus_id')
-                ->constrained('processuses')
-                ->cascadeOnDelete();
-                $table->timestamps();
-            });
+            $table->string('ancien_statut');
+
+            $table->string('nouveau_statut');
+
+            $table->timestamps();
+        });
     }
 
     /**
@@ -36,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('etape_processuses');
+        Schema::dropIfExists('historique_statuts');
     }
 };

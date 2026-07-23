@@ -2,28 +2,29 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProjetRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'nom' => 'sometimes|string|max:255',
+
+            'description' => 'nullable|string',
+
+            'date_debut' => 'sometimes|date',
+
+            'date_fin' => 'nullable|date|after_or_equal:date_debut',
+
+            'statut' => 'sometimes|in:à faire,En cours,Suspendu,Terminé',
+
+            'chef_projet_id' => 'sometimes|exists:users,id'
         ];
     }
 }

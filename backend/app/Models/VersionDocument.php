@@ -6,14 +6,30 @@ use Illuminate\Database\Eloquent\Model;
 
 class VersionDocument extends Model
 {
-    protected $fillable = 
-    [
-        'numero',
-        'fichier',
-        'document_id'
+    protected $fillable = [
+
+    'document_id',
+
+    'user_id',
+
+    'numero',
+
+    'chemin',
+
+    'taille',
+
+    'type',
+
+    'commentaire',
+
     ];
-    public function document() 
+    public function document()
     {
-        return $this->belongsTo(Document::class, 'document_id');
+        return $this->belongsTo(Document::class);
+    }
+
+    public function utilisateur()
+    {
+        return $this->belongsTo(User::class,'user_id');
     }
 }

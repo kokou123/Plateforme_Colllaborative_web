@@ -2,47 +2,97 @@
 
 namespace App\Http\Controllers\API;
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreProcessusRequest;
+use App\Http\Requests\UpdateProcessusRequest;
+use App\Http\Resources\ProcessusResource;
+use App\Models\Processus;
+use Illuminate\Http\JsonResponse;
+use App\Services\AuditLogService;
 
-class ProcessusController
+class ProcessusController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(): JsonResponse
     {
-        //
+        return response()->json([
+            'success' => true,
+            'data' => ProcessusResource::collection(
+                Processus::with(['projet','etapes'])->paginate(10)
+            )
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreProcessusRequest $request): JsonResponse
     {
-        //
+        $processus = Processus::create($request->validated());
+        AuditLogService::enregistrer(
+        auth()->id(),
+        'Création',
+        'Processus',
+        $processus->id,
+        "Création du processus {$processus->nom}."
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Processus créé avec succès.',
+            'data' => new ProcessusResource(
+                $processus->load(['projet','etapes'])
+            )
+        ],201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Processus $processus): JsonResponse
     {
-        //
+        if (Processus::where('projet_id', $request->projet_id)->exists()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Ce projet possède déjà un processus.'
+        ], 422);
+        }
+        return response()->json([
+            'success' => true,
+            'data' => new ProcessusResource(
+                $processus->load(['projet','etapes'])
+            )
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(UpdateProcessusRequest $request, Processus $processus): JsonResponse
     {
-        //
+        $processus->update($request->validated());
+        AuditLogService::enregistrer(
+        auth()->id(),
+        'Modification',
+        'Processus',
+        $processus->id,
+        "Modification du processus {$processus->nom}."
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Processus modifié avec succès.',
+            'data' => new ProcessusResource(
+                $processus->load(['projet','etapes'])
+            )
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Processus $processus): JsonResponse
     {
-        //
+        $processus->delete();
+
+        AuditLogService::enregistrer(
+        auth()->id(),
+        'Suppression',
+        'Processus',
+        $processus->id,
+        "Suppression du processus {$processus->nom}."
+    );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Processus supprimé avec succès.'
+        ]);
     }
 }

@@ -12,18 +12,28 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('audit_logs', function (Blueprint $table) {
-            $table->id();
 
-            $table->string('action');
-            
-            $table->text('description')->nullable();
+        $table->id();
 
-            $table->foreignId('user_id')
-                  ->constrained()
-                  ->cascadeOnDelete();
+        $table->foreignId('user_id')
+            ->nullable()
+            ->constrained()
+            ->nullOnDelete();
 
-            $table->timestamps();
-        });
+        $table->string('action');
+
+        $table->string('module');
+
+        $table->unsignedBigInteger('element_id')->nullable();
+
+        $table->text('description');
+
+        $table->string('adresse_ip')->nullable();
+
+        $table->text('user_agent')->nullable();
+
+        $table->timestamps();
+    });
     }
 
     /**

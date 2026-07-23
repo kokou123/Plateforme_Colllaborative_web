@@ -14,13 +14,23 @@ return new class extends Migration
         Schema::create('version_documents', function (Blueprint $table) {
             $table->id();
 
+            $table->foreignId('document_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->foreignId('user_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
             $table->integer('numero');
 
-            $table->string('fichier');
+            $table->string('chemin');
 
-            $table->foreignId('document_id')
-            ->constrained()
-            ->cascadeOnDelete();
+            $table->string('type');
+
+            $table->unsignedBigInteger('taille');
+
+            $table->text('commentaire')->nullable();
 
             $table->timestamps();
         });

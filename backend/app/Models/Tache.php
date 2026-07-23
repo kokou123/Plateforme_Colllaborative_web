@@ -20,12 +20,16 @@ class Tache extends Model
     {
         return $this->belongsTo(Projet::class);
     }
-    public function utilisateur()
+    public function assignee()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'assigned_to');
     }
     public function commentaires()
     {
         return $this->hasMany(Commentaire::class);
+    }
+    public function historiques()
+    {
+        return $this->hasMany(HistoriqueStatut::class);
     }
 }
