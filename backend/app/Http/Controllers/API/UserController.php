@@ -9,6 +9,8 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Services\AuditLogService;
+use Illuminate\Support\Str;
+use App\Services\MailService;
 
 class UserController
 {
@@ -37,27 +39,35 @@ class UserController
     }
     public function store(StoreUserRequest $request)
     {
-            $user = User::create([
-                'nom' => $request->nom,
-                'prenom' => $request->prenom,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-            ]);
+        $token = Str::random(48);
 
-            AuditLogService::enregistrer(
-            auth()->id(),
-            'Création',
-            'Utilisateur',
-            $user->id,
+        $user = User::create([
+            'nom' => $request->nom,
+            'prenom' => $request->prenom,
+            'email' => $request->email,
+            'password' => Hash::make(Str::random(32)), // placeholder, inutilisable
+            'entreprise_id' => auth()->user()->entreprise_id,
+            'invitation_token' => $token,
+            'invitation_expire_at' => now()->addDays(7),
+        ]);
+
+        MailService::envoyerInvitation(
+            $user->email,
+            auth()->user()->entreprise->nom,
+            env('FRONTEND_URL') . "/activation/" . $token
+        );
+
+        AuditLogService::enregistrer(
+            auth()->id(), 'Création', 'Utilisateur', $user->id,
             "Création de {$user->nom} {$user->prenom}"
         );
 
-            $user->assignRole($request->role);
+        $user->assignRole($request->role);
 
-            return response()->json([
-                'message' => 'Utilisateur créé avec succès.',
-                'data' => new UserResource($user->load('roles'))
-            ], 201);
+        return response()->json([
+            'message' => 'Invitation envoyée avec succès.',
+            'data' => new UserResource($user->load('roles'))
+        ], 201);
     }
     /*
      * Update the specified resource in storage.

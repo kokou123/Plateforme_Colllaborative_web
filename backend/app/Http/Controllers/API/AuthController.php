@@ -23,6 +23,16 @@ class AuthController extends Controller
 
         $user = User::where('email',$request->email)->first();
 
+        if(!$user->email_verifie){
+
+        return response()->json([
+
+            'message'=>'Veuillez vérifier votre adresse email.'
+
+        ],403);
+
+        }
+
         if(!$user || !Hash::check($request->password,$user->password))
         {
             return response()->json([
@@ -38,6 +48,16 @@ class AuthController extends Controller
             'user'=>$user,
             'roles'=>$user->getRoleNames()
         ],200);
+
+        LoginHistory::create([
+
+        'user_id'=>$user->id,
+
+        'ip'=>$request->ip(),
+
+        'user_agent'=>$request->userAgent()
+
+        ]);
 
         AuditLogService::enregistrer(
         auth()->id(),

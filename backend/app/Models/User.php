@@ -18,7 +18,13 @@ class User extends Authenticatable
         'email',
         'password',
         'photo',
-        'equipe_id'
+        'equipe_id',
+        'entreprise_id',
+        'email_verifie',
+        'otp',
+        'otp_expire_at',
+        'invitation_token',        
+        'invitation_expire_at',
     ];
 
     protected $hidden = [
@@ -71,5 +77,9 @@ class User extends Authenticatable
         public function permissions() 
         {
             return $this->hasMany(DocumentPermission::class);
+        }
+        public function entreprise()
+        {
+            return $this->belongsTo(Entreprise::class);
         }
 }

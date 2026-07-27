@@ -23,7 +23,7 @@ class AdminSeeder extends Seeder
 
         );
 
-        $admin->assignRole('Administrateur');
+        $admin->assignRole('Admin');
 
     }
 }
