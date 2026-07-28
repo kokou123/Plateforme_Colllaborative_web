@@ -5,6 +5,11 @@ namespace App\Http\Controllers\API\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\RegisterEntrepriseRequest;
+use Illuminate\Support\Facades\DB;
+use App\Models\Entreprise;
+use App\Models\User;
+use App\Services\MailService;
+use App\Services\OtpService;
 
 class RegisterController extends Controller
 {

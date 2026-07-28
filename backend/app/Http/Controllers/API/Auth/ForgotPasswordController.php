@@ -15,39 +15,24 @@ class ForgotPasswordController extends Controller
 
     public function envoyerOtp(ForgotPasswordRequest $request)
     {
+        $user = User::where('email', $request->email)->first();
 
-        $user = User::where(
-
-            'email',
-
-            $request->email
-
-        )->first();
+        if (!$user) {
+            return response()->json([
+                'message' => 'Aucun compte associé à cet email.'
+            ], 404);
+        }
 
         $otp = OtpService::generer();
 
         $user->update([
-
-            'otp'=>$otp,
-
-            'otp_expire_at'=>now()->addMinutes(10)
-
+            'otp' => $otp,
+            'otp_expire_at' => now()->addMinutes(10)
         ]);
 
-        MailService::envoyerResetPassword(
+        MailService::envoyerResetPassword($user->email, $otp);
 
-            $user->email,
-
-            $otp
-
-        );
-
-        return response()->json([
-
-            'message'=>'OTP envoyé.'
-
-        ]);
-
+        return response()->json(['message' => 'OTP envoyé.']);
     }
 
     public function reset(ResetPasswordRequest $request)
