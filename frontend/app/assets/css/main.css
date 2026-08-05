@@ -1,2 +1,40 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+html {
+  scroll-behavior: smooth;
+}
+
+@theme {
+  --color-ink: #101828;
+  --color-slate: #667085;
+  --color-paper: #FAFAFA;
+  --color-border: #E4E7EC;
+  --color-brand: #3B5BFF;
+  --color-brand-light: #EEF1FF;
+  --color-accent: #FF8A3D;
+  --color-accent-light: #FFF3EA;
+  --color-success: #12B76A;
+  --color-success-light: #E7F9F1;
+  --color-danger: #F04438;
+  --color-danger-light: #FEEDEC;
+  --font-display: "Sora", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background: var(--color-paper);
+}
+.font-display { font-family: var(--font-display); }
+.font-mono { font-family: var(--font-mono); }
+@keyframes scroll-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: scroll-marquee 28s linear infinite;
+}

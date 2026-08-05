@@ -10,8 +10,7 @@ export const useAuthStore = defineStore('auth', () => {
     nom_admin: string; prenom_admin: string
     email_admin: string; password: string; password_confirmation: string
   }) => {
-    const { getCsrfCookie, apiFetch } = useApi()
-    await getCsrfCookie()
+    const { apiFetch } = useApi()
     return await apiFetch('/auth/register', { method: 'POST', body: payload })
   }
 
@@ -26,27 +25,28 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const login = async (email: string, password: string) => {
-    const { getCsrfCookie, apiFetch } = useApi()
-    await getCsrfCookie()
+    const { apiFetch, token } = useApi()
     const response = await apiFetch<{ token: string; user: any; roles: string[] }>('/auth/login', {
       method: 'POST',
       body: { email, password },
     })
+    token.value = response.token
     user.value = response.user
     roles.value = response.roles
     return response
-  }
+}
 
-  const activateAccount = async (token: string, password: string, password_confirmation: string) => {
-    const { apiFetch } = useApi()
-    const response = await apiFetch<{ token: string; user: any; roles: string[] }>('/auth/activation', {
-      method: 'POST',
-      body: { token, password, password_confirmation },
-    })
-    user.value = response.user
-    roles.value = response.roles
-    return response
-  }
+const activateAccount = async (tokenParam: string, password: string, password_confirmation: string) => {
+  const { apiFetch, token } = useApi()
+  const response = await apiFetch<{ token: string; user: any; roles: string[] }>('/auth/activation', {
+    method: 'POST',
+    body: { token: tokenParam, password, password_confirmation },
+  })
+  token.value = response.token
+  user.value = response.user
+  roles.value = response.roles
+  return response
+}
 
   const forgotPassword = async (email: string) => {
     const { apiFetch } = useApi()

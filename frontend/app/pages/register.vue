@@ -8,12 +8,13 @@ definePageMeta({ layout: 'auth' })
 const authStore = useAuthStore()
 const router = useRouter()
 const errorMessage = ref('')
+const loading = ref(false)
 
 const schema = toTypedSchema(
   z.object({
     nom: z.string().min(2, "Nom de l'entreprise requis"),
     secteur: z.string().optional(),
-    taille: z.coerce.number().int().positive("Taille invalide"),
+    taille: z.coerce.number().int().positive('Taille invalide'),
     email_entreprise: z.string().email('Email invalide'),
     telephone: z.string().optional(),
     adresse: z.string().optional(),
@@ -43,65 +44,69 @@ const [password_confirmation] = defineField('password_confirmation')
 
 const onSubmit = handleSubmit(async (values) => {
   errorMessage.value = ''
+  loading.value = true
   try {
     await authStore.registerEntreprise(values)
-    // on garde l'email pour l'étape OTP, pas retourné par l'API
     router.push({ path: '/verify-email', query: { email: values.email_admin } })
   } catch (e: any) {
     errorMessage.value = e?.data?.message || 'Une erreur est survenue'
+  } finally {
+    loading.value = false
   }
 })
+
+const inputClass = "w-full border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-brand"
 </script>
 
 <template>
   <div>
-    <h1 class="text-2xl font-semibold mb-1">Créer votre entreprise</h1>
-    <p class="text-gray-500 text-sm mb-6">Vous devenez administrateur de l'espace.</p>
+    <h1 class="font-display font-bold text-2xl mb-1">Créer votre entreprise</h1>
+    <p class="text-slate text-sm mb-6">Vous devenez administrateur de l'espace.</p>
 
     <form @submit="onSubmit" class="space-y-3">
-      <p class="text-xs font-medium text-gray-400 uppercase tracking-wide pt-2">Entreprise</p>
-      <input v-model="nom" placeholder="Nom de l'entreprise" class="w-full border rounded-lg px-3 py-2" />
-      <p v-if="errors.nom" class="text-red-600 text-xs">{{ errors.nom }}</p>
+      <p class="text-xs font-mono font-semibold text-brand uppercase tracking-wide pt-2">Entreprise</p>
+      <input v-model="nom" placeholder="Nom de l'entreprise" :class="inputClass" />
+      <p v-if="errors.nom" class="text-danger text-xs">{{ errors.nom }}</p>
 
       <div class="grid grid-cols-2 gap-3">
-        <input v-model="secteur" placeholder="Secteur" class="w-full border rounded-lg px-3 py-2" />
-        <input v-model="taille" type="number" placeholder="Taille (nb employés)" class="w-full border rounded-lg px-3 py-2" />
+        <input v-model="secteur" placeholder="Secteur" :class="inputClass" />
+        <input v-model="taille" type="number" placeholder="Taille (nb employés)" :class="inputClass" />
       </div>
-      <p v-if="errors.taille" class="text-red-600 text-xs">{{ errors.taille }}</p>
+      <p v-if="errors.taille" class="text-danger text-xs">{{ errors.taille }}</p>
 
-      <input v-model="email_entreprise" placeholder="Email entreprise" class="w-full border rounded-lg px-3 py-2" />
-      <p v-if="errors.email_entreprise" class="text-red-600 text-xs">{{ errors.email_entreprise }}</p>
+      <input v-model="email_entreprise" placeholder="Email entreprise" :class="inputClass" />
+      <p v-if="errors.email_entreprise" class="text-danger text-xs">{{ errors.email_entreprise }}</p>
 
       <div class="grid grid-cols-2 gap-3">
-        <input v-model="telephone" placeholder="Téléphone" class="w-full border rounded-lg px-3 py-2" />
-        <input v-model="adresse" placeholder="Adresse" class="w-full border rounded-lg px-3 py-2" />
+        <input v-model="telephone" placeholder="Téléphone" :class="inputClass" />
+        <input v-model="adresse" placeholder="Adresse" :class="inputClass" />
       </div>
 
-      <p class="text-xs font-medium text-gray-400 uppercase tracking-wide pt-4">Administrateur</p>
+      <p class="text-xs font-mono font-semibold text-brand uppercase tracking-wide pt-4">Administrateur</p>
       <div class="grid grid-cols-2 gap-3">
-        <input v-model="prenom_admin" placeholder="Prénom" class="w-full border rounded-lg px-3 py-2" />
-        <input v-model="nom_admin" placeholder="Nom" class="w-full border rounded-lg px-3 py-2" />
+        <input v-model="prenom_admin" placeholder="Prénom" :class="inputClass" />
+        <input v-model="nom_admin" placeholder="Nom" :class="inputClass" />
       </div>
-      <p v-if="errors.nom_admin" class="text-red-600 text-xs">{{ errors.nom_admin }}</p>
+      <p v-if="errors.nom_admin" class="text-danger text-xs">{{ errors.nom_admin }}</p>
 
-      <input v-model="email_admin" placeholder="Votre email" class="w-full border rounded-lg px-3 py-2" />
-      <p v-if="errors.email_admin" class="text-red-600 text-xs">{{ errors.email_admin }}</p>
+      <input v-model="email_admin" placeholder="Votre email" :class="inputClass" />
+      <p v-if="errors.email_admin" class="text-danger text-xs">{{ errors.email_admin }}</p>
 
-      <input v-model="password" type="password" placeholder="Mot de passe" class="w-full border rounded-lg px-3 py-2" />
-      <p v-if="errors.password" class="text-red-600 text-xs">{{ errors.password }}</p>
+      <input v-model="password" type="password" placeholder="Mot de passe" :class="inputClass" />
+      <p v-if="errors.password" class="text-danger text-xs">{{ errors.password }}</p>
 
-      <input v-model="password_confirmation" type="password" placeholder="Confirmer le mot de passe" class="w-full border rounded-lg px-3 py-2" />
-      <p v-if="errors.password_confirmation" class="text-red-600 text-xs">{{ errors.password_confirmation }}</p>
+      <input v-model="password_confirmation" type="password" placeholder="Confirmer le mot de passe" :class="inputClass" />
+      <p v-if="errors.password_confirmation" class="text-danger text-xs">{{ errors.password_confirmation }}</p>
 
-      <p v-if="errorMessage" class="text-red-600 text-sm">{{ errorMessage }}</p>
+      <p v-if="errorMessage" class="text-danger text-sm bg-danger-light rounded-lg px-3 py-2">{{ errorMessage }}</p>
 
-      <button type="submit" class="w-full bg-blue-600 text-white rounded-lg py-2.5 font-medium hover:bg-blue-700 mt-2">
-        Créer mon entreprise
+      <button type="submit" :disabled="loading" class="w-full bg-brand text-white rounded-lg py-2.5 font-medium hover:bg-ink transition-colors mt-2 disabled:opacity-50">
+        {{ loading ? 'Création...' : 'Créer mon entreprise' }}
       </button>
     </form>
 
-    <p class="text-center text-sm text-gray-500 mt-6">
-      Déjà un compte ? <NuxtLink to="/login" class="text-blue-600 font-medium">Se connecter</NuxtLink>
+    <p class="text-center text-sm text-slate mt-6">
+      Déjà un compte ? <NuxtLink to="/login" class="text-brand font-medium">Se connecter</NuxtLink>
     </p>
   </div>
 </template>

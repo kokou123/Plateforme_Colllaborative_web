@@ -17,28 +17,59 @@ class UserController
 
     public function index()
     {
-         $users = User::with('roles')->get();
+        $users = User::with('roles')
+            ->where('entreprise_id', auth()->user()->entreprise_id)
+            ->get();
 
         return response()->json([
-        'success' => true,
-        'message' => 'Liste des utilisateurs',
-        'data' => UserResource::collection($users),
-    ]);
+            'success' => true,
+            'message' => 'Liste des utilisateurs',
+            'data' => UserResource::collection($users),
+        ]);
     }
-
     /**
      * Store a newly created resource in storage.
      */
     public function show(User $user)
     {
+        if ($user->entreprise_id !== auth()->user()->entreprise_id) {
+            return response()->json(['message' => 'Accès non autorisé.'], 403);
+        }
+
         return response()->json([
             'success' => true,
             'data' => new UserResource($user->load('roles'))
-
         ]);
     }
     public function store(StoreUserRequest $request)
-    {
+    {   
+        if ($request->role === 'Admin') {
+            return response()->json([
+                'message' => 'Impossible d\'inviter un administrateur supplémentaire.'
+            ], 422);
+        }
+
+    if (
+        $request->role === 'Chef de projet' &&
+        User::role('Chef de projet')
+            ->where('entreprise_id', auth()->user()->entreprise_id)
+            ->exists()
+    ) {
+        return response()->json([
+            'message' => 'Un chef de projet existe déjà pour cette entreprise.'
+        ], 422);
+    }
+        if (
+        $request->role === 'Chef de projet' &&
+        User::role('Chef de projet')
+            ->where('entreprise_id', auth()->user()->entreprise_id)
+            ->exists()
+        ) {
+            return response()->json([
+                'message' => 'Un chef de projet existe déjà pour cette entreprise.'
+            ], 422);
+        }
+        
         $token = Str::random(48);
 
         $user = User::create([
@@ -74,6 +105,10 @@ class UserController
      */
     public function update(UpdateUserRequest $request, User $user)
     {
+        if ($user->entreprise_id !== auth()->user()->entreprise_id) 
+        {
+            return response()->json(['message' => 'Accès non autorisé.'], 403);
+        }
         $photo = $user->photo;
 
         if ($request->hasFile('photo')) {
@@ -107,7 +142,11 @@ class UserController
      * Remove the specified resource from storage.
      */
     public function destroy(User $user)
-    {
+    {   
+        if ($user->entreprise_id !== auth()->user()->entreprise_id) 
+        {
+            return response()->json(['message' => 'Accès non autorisé.'], 403);
+        }
         $user->delete();
         AuditLogService::enregistrer(
         auth()->id(),

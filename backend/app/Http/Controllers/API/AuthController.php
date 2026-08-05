@@ -17,56 +17,32 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email'=>'required|email',
-            'password'=>'required'
+            'email' => 'required|email',
+            'password' => 'required'
         ]);
 
-        $user = User::where('email',$request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
-        if(!$user->email_verifie){
-
-        return response()->json([
-
-            'message'=>'Veuillez vérifier votre adresse email.'
-
-        ],403);
-
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'message' => 'Email ou mot de passe incorrect.'
+            ], 401);
         }
 
-        if(!$user || !Hash::check($request->password,$user->password))
-        {
+        if (!$user->email_verifie) {
             return response()->json([
-                'message'=>'Email ou mot de passe incorrect.'
-            ],401);
+                'message' => 'Veuillez vérifier votre adresse email.'
+            ], 403);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message'=>'Connexion réussie.',
-            'token'=>$token,
-            'user'=>$user,
-            'roles'=>$user->getRoleNames()
-        ],200);
-
-        LoginHistory::create([
-
-        'user_id'=>$user->id,
-
-        'ip'=>$request->ip(),
-
-        'user_agent'=>$request->userAgent()
-
-        ]);
-
-        AuditLogService::enregistrer(
-        auth()->id(),
-        'Connexion',
-        'Authentification',
-        null,
-        'Connexion réussie.'
-    );
-
+            'message' => 'Connexion réussie.',
+            'token' => $token,
+            'user' => $user,
+            'roles' => $user->getRoleNames()
+        ], 200);
     }
 
     /**
