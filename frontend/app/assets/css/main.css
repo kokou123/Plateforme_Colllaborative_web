@@ -22,6 +22,10 @@ html {
   --font-display: "Sora", sans-serif;
   --font-body: "Inter", sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
+  --color-ink-900: #0B1120;
+  --color-ink-800: #131B2E;
+  --color-ink-700: #1E2A44;
+  --color-mist: #94A3B8;
 }
 
 body {

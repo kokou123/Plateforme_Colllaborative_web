@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use App\Services\AuditLogService;
 class EntrepriseController extends Controller
 {
     public function store(StoreEntrepriseRequest $request)
@@ -44,5 +44,32 @@ class EntrepriseController extends Controller
 
         }
 
+    }
+
+    public function show()
+    {
+        return response()->json([
+            'success' => true,
+            'data' => auth()->user()->entreprise
+        ]);
+    }
+
+    public function update(Request $request)
+    {
+        $request->validate([
+            'nom' => 'required|string',
+            'secteur' => 'nullable|string',
+            'taille' => 'required|integer',
+            'email' => 'required|email',
+            'telephone' => 'nullable|string',
+            'adresse' => 'nullable|string',
+        ]);
+
+        $entreprise = auth()->user()->entreprise;
+        $entreprise->update($request->only(['nom', 'secteur', 'taille', 'email', 'telephone', 'adresse']));
+
+        AuditLogService::enregistrer(auth()->id(), 'Modification', 'Entreprise', $entreprise->id, "Modification des informations de l'entreprise.");
+
+        return response()->json(['success' => true, 'message' => 'Entreprise mise à jour.', 'data' => $entreprise]);
     }
 }

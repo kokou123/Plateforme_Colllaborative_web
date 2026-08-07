@@ -23,27 +23,24 @@ class RegisterEntrepriseRequest extends FormRequest
     public function rules()
     {
         return [
+            'nom' => 'required',
+            'secteur' => 'nullable',
+            'taille' => 'required|integer',
+            'email_entreprise' => 'required|email|unique:entreprises,email',
+            'telephone' => 'nullable',
+            'adresse' => 'nullable',
+            'nom_admin' => ['required', 'regex:/^[\pL\s\'\-\/]+$/u'],
+            'prenom_admin' => ['required', 'regex:/^[\pL\s\'\-\/]+$/u'],
+            'email_admin' => 'required|email|unique:users,email',
+            'password' => 'required|min:8|confirmed',
+        ];
+    }
 
-            'nom'=>'required',
-
-            'secteur'=>'nullable',
-
-            'taille'=>'required|integer',
-
-            'email_entreprise'=>'required|email|unique:entreprises,email',
-
-            'telephone'=>'nullable',
-
-            'adresse'=>'nullable',
-
-            'nom_admin'=>'required',
-
-            'prenom_admin'=>'required',
-
-            'email_admin'=>'required|email|unique:users,email',
-
-            'password'=>'required|min:8|confirmed'
-
+    public function messages()
+    {
+        return [
+            'nom_admin.regex' => 'Le nom ne doit contenir que des lettres.',
+            'prenom_admin.regex' => 'Le prénom ne doit contenir que des lettres.',
         ];
     }
 }

@@ -9,17 +9,20 @@ const authStore = useAuthStore()
 const router = useRouter()
 const errorMessage = ref('')
 const loading = ref(false)
+const activeTab = ref<'entreprise' | 'admin'>('entreprise')
+
+const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'\-\/]+$/
 
 const schema = toTypedSchema(
   z.object({
-    nom: z.string().min(2, "Nom de l'entreprise requis"),
+    nom: z.string().min(2, "Nom de l'entreprise requis"), // entreprise : chiffres autorisés (ex: "24H Services")
     secteur: z.string().optional(),
     taille: z.coerce.number().int().positive('Taille invalide'),
     email_entreprise: z.string().email('Email invalide'),
     telephone: z.string().optional(),
     adresse: z.string().optional(),
-    nom_admin: z.string().min(2, 'Requis'),
-    prenom_admin: z.string().min(2, 'Requis'),
+    nom_admin: z.string().min(2, 'Requis').regex(nameRegex, 'Lettres uniquement'),
+    prenom_admin: z.string().min(2, 'Requis').regex(nameRegex, 'Lettres uniquement'),
     email_admin: z.string().email('Email invalide'),
     password: z.string().min(8, '8 caractères minimum'),
     password_confirmation: z.string(),
@@ -29,7 +32,7 @@ const schema = toTypedSchema(
   })
 )
 
-const { handleSubmit, defineField, errors } = useForm({ validationSchema: schema })
+const { handleSubmit, defineField, errors, validateField } = useForm({ validationSchema: schema })
 const [nom] = defineField('nom')
 const [secteur] = defineField('secteur')
 const [taille] = defineField('taille')
@@ -41,6 +44,12 @@ const [prenom_admin] = defineField('prenom_admin')
 const [email_admin] = defineField('email_admin')
 const [password] = defineField('password')
 const [password_confirmation] = defineField('password_confirmation')
+
+const goToAdminTab = async () => {
+  const fields = ['nom', 'taille', 'email_entreprise'] as const
+  const results = await Promise.all(fields.map(f => validateField(f)))
+  if (results.every(r => r.valid)) activeTab.value = 'admin'
+}
 
 const onSubmit = handleSubmit(async (values) => {
   errorMessage.value = ''
@@ -54,59 +63,76 @@ const onSubmit = handleSubmit(async (values) => {
     loading.value = false
   }
 })
-
-const inputClass = "w-full border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-brand"
 </script>
 
 <template>
   <div>
     <h1 class="font-display font-bold text-2xl mb-1">Créer votre entreprise</h1>
-    <p class="text-slate text-sm mb-6">Vous devenez administrateur de l'espace.</p>
+    <p class="text-mist text-sm mb-6">Vous devenez administrateur de l'espace.</p>
 
-    <form @submit="onSubmit" class="space-y-3">
-      <p class="text-xs font-mono font-semibold text-brand uppercase tracking-wide pt-2">Entreprise</p>
-      <input v-model="nom" placeholder="Nom de l'entreprise" :class="inputClass" />
-      <p v-if="errors.nom" class="text-danger text-xs">{{ errors.nom }}</p>
-
-      <div class="grid grid-cols-2 gap-3">
-        <input v-model="secteur" placeholder="Secteur" :class="inputClass" />
-        <input v-model="taille" type="number" placeholder="Taille (nb employés)" :class="inputClass" />
-      </div>
-      <p v-if="errors.taille" class="text-danger text-xs">{{ errors.taille }}</p>
-
-      <input v-model="email_entreprise" placeholder="Email entreprise" :class="inputClass" />
-      <p v-if="errors.email_entreprise" class="text-danger text-xs">{{ errors.email_entreprise }}</p>
-
-      <div class="grid grid-cols-2 gap-3">
-        <input v-model="telephone" placeholder="Téléphone" :class="inputClass" />
-        <input v-model="adresse" placeholder="Adresse" :class="inputClass" />
-      </div>
-
-      <p class="text-xs font-mono font-semibold text-brand uppercase tracking-wide pt-4">Administrateur</p>
-      <div class="grid grid-cols-2 gap-3">
-        <input v-model="prenom_admin" placeholder="Prénom" :class="inputClass" />
-        <input v-model="nom_admin" placeholder="Nom" :class="inputClass" />
-      </div>
-      <p v-if="errors.nom_admin" class="text-danger text-xs">{{ errors.nom_admin }}</p>
-
-      <input v-model="email_admin" placeholder="Votre email" :class="inputClass" />
-      <p v-if="errors.email_admin" class="text-danger text-xs">{{ errors.email_admin }}</p>
-
-      <input v-model="password" type="password" placeholder="Mot de passe" :class="inputClass" />
-      <p v-if="errors.password" class="text-danger text-xs">{{ errors.password }}</p>
-
-      <input v-model="password_confirmation" type="password" placeholder="Confirmer le mot de passe" :class="inputClass" />
-      <p v-if="errors.password_confirmation" class="text-danger text-xs">{{ errors.password_confirmation }}</p>
-
-      <p v-if="errorMessage" class="text-danger text-sm bg-danger-light rounded-lg px-3 py-2">{{ errorMessage }}</p>
-
-      <button type="submit" :disabled="loading" class="w-full bg-brand text-white rounded-lg py-2.5 font-medium hover:bg-ink transition-colors mt-2 disabled:opacity-50">
-        {{ loading ? 'Création...' : 'Créer mon entreprise' }}
+    <!-- Onglets -->
+    <div class="flex items-center gap-2 mb-6">
+      <button
+        type="button" @click="activeTab = 'entreprise'"
+        :class="['flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-colors',
+          activeTab === 'entreprise' ? 'bg-brand text-white' : 'bg-ink-900 text-mist border border-ink-700']"
+      >
+        <span class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs">1</span>
+        Entreprise
       </button>
+      <button
+        type="button" @click="goToAdminTab"
+        :class="['flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-colors',
+          activeTab === 'admin' ? 'bg-brand text-white' : 'bg-ink-900 text-mist border border-ink-700']"
+      >
+        <span class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs">2</span>
+        Administrateur
+      </button>
+    </div>
+
+    <form @submit="onSubmit" class="space-y-4">
+      <div v-show="activeTab === 'entreprise'" class="space-y-4">
+        <AuthInput v-model="nom" label="Nom de l'entreprise" icon="i-lucide-building-2" placeholder="Ex: Baobab SARL" :error="errors.nom" />
+        <div class="grid grid-cols-2 gap-3">
+          <AuthInput v-model="secteur" label="Secteur" icon="i-lucide-briefcase" placeholder="Informatique" />
+          <AuthInput v-model="taille" label="Taille" icon="i-lucide-users" placeholder="20" type="number" :error="errors.taille" />
+        </div>
+        <AuthInput v-model="email_entreprise" label="Email entreprise" icon="i-lucide-mail" placeholder="contact@entreprise.com" :error="errors.email_entreprise" />
+        <div class="grid grid-cols-2 gap-3">
+          <AuthInput v-model="telephone" label="Téléphone" icon="i-lucide-phone" placeholder="+228..." />
+          <AuthInput v-model="adresse" label="Adresse" icon="i-lucide-map-pin" placeholder="Lomé" />
+        </div>
+
+        <button type="button" @click="goToAdminTab" class="w-full bg-brand text-white rounded-lg py-2.5 font-medium hover:bg-white hover:text-ink-900 transition-colors flex items-center justify-center gap-2">
+          Continuer
+          <UIcon name="i-lucide-arrow-right" class="w-4 h-4" />
+        </button>
+      </div>
+
+      <div v-show="activeTab === 'admin'" class="space-y-4">
+        <div class="grid grid-cols-2 gap-3">
+          <AuthInput v-model="prenom_admin" label="Prénom" icon="i-lucide-user" placeholder="Prénom" :error="errors.prenom_admin" />
+          <AuthInput v-model="nom_admin" label="Nom" icon="i-lucide-user" placeholder="Nom" />
+        </div>
+        <AuthInput v-model="email_admin" label="Votre email" icon="i-lucide-mail" placeholder="vous@entreprise.com" :error="errors.email_admin" />
+        <AuthInput v-model="password" label="Mot de passe" type="password" icon="i-lucide-lock" placeholder="8 caractères minimum" :error="errors.password" />
+        <AuthInput v-model="password_confirmation" label="Confirmer le mot de passe" type="password" icon="i-lucide-lock" placeholder="••••••••" :error="errors.password_confirmation" />
+
+        <p v-if="errorMessage" class="text-danger text-sm bg-danger-light/10 border border-danger/20 rounded-lg px-3 py-2">{{ errorMessage }}</p>
+
+        <div class="flex gap-3">
+          <button type="button" @click="activeTab = 'entreprise'" class="border border-ink-700 rounded-lg px-4 py-2.5 text-sm font-medium text-mist hover:text-white transition-colors">
+            Retour
+          </button>
+          <button type="submit" :disabled="loading" class="flex-1 bg-brand text-white rounded-lg py-2.5 font-medium hover:bg-white hover:text-ink-900 transition-colors disabled:opacity-50">
+            {{ loading ? 'Création...' : 'Créer mon entreprise' }}
+          </button>
+        </div>
+      </div>
     </form>
 
-    <p class="text-center text-sm text-slate mt-6">
-      Déjà un compte ? <NuxtLink to="/login" class="text-brand font-medium">Se connecter</NuxtLink>
+    <p class="text-center text-sm text-mist mt-7">
+      Déjà un compte ? <NuxtLink to="/login" class="text-brand font-medium hover:text-white transition-colors">Se connecter</NuxtLink>
     </p>
   </div>
 </template>

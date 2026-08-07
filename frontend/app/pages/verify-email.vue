@@ -1,4 +1,3 @@
-<!-- frontend/app/pages/verify-email.vue -->
 <script setup lang="ts">
 definePageMeta({ layout: 'auth' })
 
@@ -19,10 +18,7 @@ const onInput = (index: number) => {
 const submit = async () => {
   errorMessage.value = ''
   const code = digits.value.join('')
-  if (code.length !== 6) {
-    errorMessage.value = 'Entre les 6 chiffres du code'
-    return
-  }
+  if (code.length !== 6) { errorMessage.value = 'Entre les 6 chiffres du code'; return }
   loading.value = true
   try {
     await authStore.verifyEmail(email, code)
@@ -44,23 +40,23 @@ const resend = async () => {
 
 <template>
   <div class="text-center">
-    <div class="w-12 h-12 bg-brand-light rounded-xl flex items-center justify-center mx-auto mb-5">
-      <UIcon name="i-lucide-mail-check" class="w-6 h-6 text-brand" />
+    <div class="w-14 h-14 bg-brand/15 rounded-2xl flex items-center justify-center mx-auto mb-5">
+      <UIcon name="i-lucide-mail-check" class="w-7 h-7 text-brand" />
     </div>
     <h1 class="font-display font-bold text-2xl mb-2">Confirme ton email</h1>
-    <p class="text-slate mb-6 text-sm">Code envoyé à <strong class="text-ink">{{ email }}</strong></p>
-    <div class="flex justify-center gap-2 mb-4">
+    <p class="text-mist mb-7 text-sm">Code envoyé à <strong class="text-white">{{ email }}</strong></p>
+    <div class="flex justify-center gap-2 mb-5">
       <input
         v-for="(d, i) in digits" :key="i" v-model="digits[i]" ref="inputs"
         maxlength="1" @input="onInput(i)"
-        class="w-11 h-12 text-center border border-border rounded-lg text-lg font-mono focus:outline-none focus:border-brand"
+        class="w-12 h-14 text-center bg-ink-900 border border-ink-700 rounded-lg text-lg font-mono text-white focus:outline-none focus:border-brand transition-colors"
       />
     </div>
-    <p v-if="errorMessage" class="text-danger text-sm mb-2">{{ errorMessage }}</p>
-    <p v-if="successMessage" class="text-success text-sm mb-2">{{ successMessage }}</p>
-    <button @click="submit" :disabled="loading" class="w-full bg-brand text-white rounded-lg py-2.5 font-medium hover:bg-ink transition-colors mb-3 disabled:opacity-50">
+    <p v-if="errorMessage" class="text-danger text-sm mb-3">{{ errorMessage }}</p>
+    <p v-if="successMessage" class="text-success text-sm mb-3">{{ successMessage }}</p>
+    <button @click="submit" :disabled="loading" class="w-full bg-brand text-white rounded-lg py-2.5 font-medium hover:bg-white hover:text-ink-900 transition-colors mb-4 disabled:opacity-50">
       {{ loading ? 'Vérification...' : 'Vérifier' }}
     </button>
-    <button @click="resend" class="text-sm text-brand font-medium">Renvoyer le code</button>
+    <button @click="resend" class="text-sm text-brand font-medium hover:text-white transition-colors">Renvoyer le code</button>
   </div>
 </template>

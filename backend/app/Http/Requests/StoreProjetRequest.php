@@ -21,7 +21,7 @@ class StoreProjetRequest extends FormRequest
 
             'date_fin' => 'nullable|date|after_or_equal:date_debut',
 
-            'statut' => 'nullable|in:a faire,En cours,Terminé'
+            'statut' => 'nullable|in:À faire,En cours,Suspendu,Terminé'
         ];
     }
 }

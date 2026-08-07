@@ -24,7 +24,7 @@ class UpdateProjetRequest extends FormRequest
 
             'statut' => 'sometimes|in:à faire,En cours,Suspendu,Terminé',
 
-            'chef_projet_id' => 'sometimes|exists:users,id'
+            'user_id' => 'sometimes|exists:users,id'
         ];
     }
 }

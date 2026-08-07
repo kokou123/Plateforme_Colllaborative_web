@@ -42,24 +42,23 @@ const stats = [
 </script>
 
 <template>
-  <div class="min-h-screen bg-paper font-body text-ink">
+  <div class="min-h-screen bg-ink-900 font-body text-white">
     <!-- Nav -->
-    <nav class="sticky top-0 z-20 bg-paper/90 backdrop-blur border-b border-border">
-      <div class="flex items-center justify-between px-8 py-4 max-w-7xl mx-auto">
+    <nav class="sticky top-0 z-20 bg-ink-900/85 backdrop-blur border-b border-ink-700">
+      <div class="flex items-center justify-between px-8 py-5 max-w-7xl mx-auto">
         <a href="#top" class="flex items-center gap-2 font-display font-bold text-lg">
-          <div class="w-7 h-7 bg-brand rounded-md"></div>
+          <div class="w-8 h-8 bg-brand rounded-lg flex items-center justify-center text-sm">🌳</div>
           Baobab
         </a>
-        <div class="hidden md:flex items-center gap-8">
-          <a href="#roles" class="text-sm font-medium text-slate hover:text-ink transition-colors">Rôles</a>
-          <a href="#fonctionnalites" class="text-sm font-medium text-slate hover:text-ink transition-colors">Fonctionnalités</a>
-          <a href="#comment-ca-marche" class="text-sm font-medium text-slate hover:text-ink transition-colors">Comment ça marche</a>
-          <a href="#cta" class="text-sm font-medium text-slate hover:text-ink transition-colors">Commencer</a>
-          <a href="#assistant" class="text-sm font-medium text-slate hover:text-ink transition-colors">Assistant IA</a>
+        <div class="hidden md:flex items-center gap-9">
+          <a href="#roles" class="text-xs font-semibold uppercase tracking-wide text-mist hover:text-white transition-colors">Rôles</a>
+          <a href="#fonctionnalites" class="text-xs font-semibold uppercase tracking-wide text-mist hover:text-white transition-colors">Fonctionnalités</a>
+          <a href="#comment-ca-marche" class="text-xs font-semibold uppercase tracking-wide text-mist hover:text-white transition-colors">Comment ça marche</a>
+          <a href="#assistant" class="text-xs font-semibold uppercase tracking-wide text-mist hover:text-white transition-colors">Assistant IA</a>
         </div>
         <div class="flex items-center gap-4">
-          <NuxtLink to="/login" class="text-sm font-medium text-slate hover:text-ink">Connexion</NuxtLink>
-          <NuxtLink to="/register" class="text-sm font-medium text-white bg-ink px-5 py-2.5 rounded-lg hover:bg-brand transition-colors">
+          <NuxtLink to="/login" class="text-sm font-medium text-mist hover:text-white">Connexion</NuxtLink>
+          <NuxtLink to="/register" class="text-sm font-medium text-ink-900 bg-white px-5 py-2.5 rounded-lg hover:bg-brand hover:text-white transition-colors">
             Créer une entreprise
           </NuxtLink>
         </div>
@@ -67,38 +66,76 @@ const stats = [
     </nav>
 
     <!-- Hero -->
-    <section id="top" class="max-w-6xl mx-auto px-6 pt-16 pb-20">
+    <section id="top" class="max-w-6xl mx-auto px-6 pt-20 pb-16">
       <div class="grid lg:grid-cols-2 gap-14 items-center">
         <div>
-          <h1 class="font-display font-extrabold text-5xl leading-[1.1] mb-6">
+          <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-brand mb-6">
+            <span class="w-2.5 h-2.5 bg-brand rounded-sm"></span>
+            La plateforme collaborative togolaise
+          </div>
+          <h1 class="font-display font-extrabold text-5xl leading-[1.08] mb-6">
             Une seule plateforme.<br />
             <span class="text-brand">Trois rôles.</span> Zéro friction.
           </h1>
-          <p class="text-slate text-lg mb-10 leading-relaxed">
+          <p class="text-mist text-lg mb-10 leading-relaxed max-w-lg">
             Administrateurs, chefs de projet et employés travaillent enfin dans le même espace —
             chacun voit exactement ce dont il a besoin, rien de plus.
           </p>
-          <div class="flex items-center gap-4">
-            <NuxtLink to="/register" class="bg-brand text-white px-7 py-3.5 rounded-lg font-medium hover:bg-ink transition-colors">
+          <div class="flex items-center gap-5">
+            <NuxtLink to="/register" class="bg-brand text-white px-7 py-3.5 rounded-lg font-medium hover:bg-white hover:text-ink-900 transition-colors">
               Créer mon entreprise
             </NuxtLink>
-            <NuxtLink to="/login" class="border border-border px-7 py-3.5 rounded-lg font-medium hover:border-ink transition-colors">
+            <NuxtLink to="/login" class="flex items-center gap-2 text-sm font-semibold text-white hover:text-brand transition-colors">
               J'ai déjà un compte
+              <UIcon name="i-lucide-arrow-right" class="w-4 h-4" />
             </NuxtLink>
           </div>
         </div>
 
+        <!-- Mockup produit (illustration originale, pas de photo) -->
         <div class="relative">
-          <div class="absolute -top-6 -right-6 w-32 h-32 bg-accent-light rounded-full -z-10"></div>
-          <div class="absolute -bottom-8 -left-8 w-40 h-40 bg-brand-light rounded-full -z-10"></div>
-          <div class="rounded-2xl overflow-hidden border border-border shadow-sm">
-            <img
-              src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=900&q=80"
-              alt="Équipe collaborant sur un projet"
-              class="w-full h-[420px] object-cover"
-            />
+          <div class="absolute -top-10 -right-6 w-40 h-40 bg-brand/20 rounded-full blur-2xl"></div>
+          <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-accent/10 rounded-full blur-2xl"></div>
+
+          <div class="relative bg-ink-800 border border-ink-700 rounded-2xl overflow-hidden shadow-2xl">
+            <div class="flex items-center gap-1.5 px-4 py-3 border-b border-ink-700">
+              <span class="w-2.5 h-2.5 rounded-full bg-danger/70"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-accent/70"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-success/70"></span>
+            </div>
+            <div class="p-6 space-y-4">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-brand"></div>
+                <div class="space-y-1.5 flex-1">
+                  <div class="h-2 bg-ink-700 rounded w-1/3"></div>
+                  <div class="h-2 bg-ink-700 rounded w-1/2"></div>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-3 pt-2">
+                <div class="bg-ink-700/60 rounded-lg p-3">
+                  <div class="h-2 bg-brand/60 rounded w-2/3 mb-2"></div>
+                  <div class="h-5 bg-white/10 rounded w-1/2"></div>
+                </div>
+                <div class="bg-ink-700/60 rounded-lg p-3">
+                  <div class="h-2 bg-accent/60 rounded w-2/3 mb-2"></div>
+                  <div class="h-5 bg-white/10 rounded w-1/2"></div>
+                </div>
+                <div class="bg-ink-700/60 rounded-lg p-3">
+                  <div class="h-2 bg-success/60 rounded w-2/3 mb-2"></div>
+                  <div class="h-5 bg-white/10 rounded w-1/2"></div>
+                </div>
+              </div>
+              <div class="h-24 bg-ink-700/40 rounded-lg flex items-end gap-2 p-3">
+                <div class="flex-1 bg-brand rounded-t h-[40%]"></div>
+                <div class="flex-1 bg-brand rounded-t h-[65%]"></div>
+                <div class="flex-1 bg-brand rounded-t h-[45%]"></div>
+                <div class="flex-1 bg-accent rounded-t h-[80%]"></div>
+                <div class="flex-1 bg-brand rounded-t h-[55%]"></div>
+              </div>
+            </div>
           </div>
-          <div class="absolute -bottom-6 -left-6 bg-white border border-border rounded-xl px-5 py-4 shadow-md flex items-center gap-3">
+
+          <div class="absolute -bottom-6 -left-6 bg-white text-ink rounded-xl px-5 py-4 shadow-xl flex items-center gap-3">
             <div class="w-9 h-9 rounded-full bg-success-light flex items-center justify-center">
               <UIcon name="i-lucide-check" class="w-4 h-4 text-success" />
             </div>
@@ -111,24 +148,14 @@ const stats = [
       </div>
     </section>
 
-    <!-- Stats bar -->
-    <section class="border-y border-border bg-white">
-      <div class="max-w-5xl mx-auto px-6 py-10 grid grid-cols-3 gap-6 text-center">
-        <div v-for="s in stats" :key="s.label">
-          <p class="font-display font-extrabold text-3xl text-brand">{{ s.value }}</p>
-          <p class="text-slate text-sm mt-1">{{ s.label }}</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Logos défilants -->
-    <section class="py-14 overflow-hidden">
-      <p class="text-center text-xs font-mono text-slate uppercase tracking-wider mb-8">
+    <!-- Partenaires / outils -->
+    <section class="border-y border-ink-700 py-12">
+      <p class="text-center text-xs font-semibold uppercase tracking-widest text-mist mb-8">
         Inspiré des meilleurs outils du marché
       </p>
       <div class="relative flex overflow-hidden mask-fade">
-        <div class="flex gap-12 animate-marquee shrink-0 pr-12">
-          <div v-for="tool in [...tools, ...tools]" :key="tool.name + Math.random()" class="flex items-center gap-2.5 text-slate whitespace-nowrap">
+        <div class="flex gap-14 animate-marquee shrink-0 pr-14">
+          <div v-for="tool in [...tools, ...tools]" :key="tool.name + Math.random()" class="flex items-center gap-2.5 text-mist/70 hover:text-white transition-colors whitespace-nowrap">
             <UIcon :name="tool.icon" class="w-5 h-5" />
             <span class="font-medium text-sm">{{ tool.name }}</span>
           </div>
@@ -136,86 +163,92 @@ const stats = [
       </div>
     </section>
 
+    <!-- Stats -->
+    <section class="max-w-5xl mx-auto px-6 py-16 grid grid-cols-3 gap-6 text-center">
+      <div v-for="s in stats" :key="s.label">
+        <p class="font-display font-extrabold text-4xl text-brand">{{ s.value }}</p>
+        <p class="text-mist text-sm mt-1">{{ s.label }}</p>
+      </div>
+    </section>
+
     <!-- Roles -->
-    <section id="roles" class="max-w-6xl mx-auto px-6 py-24">
+    <section id="roles" class="max-w-6xl mx-auto px-6 py-20">
       <div class="text-center mb-12">
+        <p class="text-xs font-semibold uppercase tracking-widest text-brand mb-3">Organisation</p>
         <h2 class="font-display font-bold text-3xl">Un accès pour chaque responsabilité</h2>
       </div>
       <div class="grid md:grid-cols-3 gap-5">
-        <div v-for="role in roles" :key="role.name" class="bg-white border border-border rounded-2xl p-7 relative overflow-hidden">
+        <div v-for="role in roles" :key="role.name" class="bg-ink-800 border border-ink-700 rounded-2xl p-7 relative overflow-hidden">
           <div :class="[
             'absolute top-0 left-0 w-full h-1',
             role.color === 'brand' ? 'bg-brand' : role.color === 'accent' ? 'bg-accent' : 'bg-success'
           ]"></div>
           <h3 class="font-display font-bold text-xl mb-2">{{ role.name }}</h3>
-          <p class="text-slate text-sm leading-relaxed">{{ role.desc }}</p>
+          <p class="text-mist text-sm leading-relaxed">{{ role.desc }}</p>
         </div>
       </div>
     </section>
 
     <!-- Features -->
-    <section id="fonctionnalites" class="bg-white border-y border-border py-24">
+    <section id="fonctionnalites" class="bg-ink-800/50 border-y border-ink-700 py-20">
       <div class="max-w-6xl mx-auto px-6">
         <div class="text-center mb-14">
+          <p class="text-xs font-semibold uppercase tracking-widest text-brand mb-3">Fonctionnalités</p>
           <h2 class="font-display font-bold text-3xl">Tout ce qu'il faut, rien de superflu</h2>
         </div>
         <div class="grid md:grid-cols-3 gap-x-10 gap-y-12">
           <div v-for="f in features" :key="f.title">
-            <div class="w-11 h-11 rounded-lg bg-brand-light flex items-center justify-center mb-4">
+            <div class="w-11 h-11 rounded-lg bg-brand/15 flex items-center justify-center mb-4">
               <UIcon :name="f.icon" class="w-5 h-5 text-brand" />
             </div>
             <h4 class="font-display font-semibold mb-1.5">{{ f.title }}</h4>
-            <p class="text-slate text-sm leading-relaxed">{{ f.desc }}</p>
+            <p class="text-mist text-sm leading-relaxed">{{ f.desc }}</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Comment ça marche -->
-    <section id="comment-ca-marche" class="max-w-5xl mx-auto px-6 py-24">
+    <section id="comment-ca-marche" class="max-w-5xl mx-auto px-6 py-20">
       <div class="text-center mb-14">
-        <p class="font-mono text-xs text-brand uppercase tracking-wider mb-3">Démarrage</p>
+        <p class="text-xs font-semibold uppercase tracking-widest text-brand mb-3">Démarrage</p>
         <h2 class="font-display font-bold text-3xl">Trois étapes, pas plus</h2>
       </div>
       <div class="grid md:grid-cols-3 gap-8">
-        <div v-for="step in steps" :key="step.n" class="relative">
-          <p class="font-display font-extrabold text-5xl text-brand-light mb-3">{{ step.n }}</p>
+        <div v-for="step in steps" :key="step.n">
+          <p class="font-display font-extrabold text-5xl text-ink-700 mb-3">{{ step.n }}</p>
           <h4 class="font-display font-semibold text-lg mb-2">{{ step.title }}</h4>
-          <p class="text-slate text-sm leading-relaxed">{{ step.desc }}</p>
+          <p class="text-mist text-sm leading-relaxed">{{ step.desc }}</p>
         </div>
       </div>
     </section>
 
     <!-- Assistant IA -->
-    <section id="assistant" class="max-w-6xl mx-auto px-6 py-24">
-      <div class="grid lg:grid-cols-2 gap-14 items-center">
-        <div class="order-2 lg:order-1 relative">
-          <div class="absolute -top-6 -left-6 w-28 h-28 bg-brand-light rounded-full -z-10"></div>
-          <div class="bg-ink rounded-2xl p-7 text-white">
-            <div class="flex items-center gap-2 mb-5">
-              <div class="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
-                <UIcon name="i-lucide-sparkles" class="w-4 h-4 text-white" />
-              </div>
-              <span class="font-display font-semibold text-sm">Assistant Baobab</span>
+    <section id="assistant" class="bg-ink-800/50 border-y border-ink-700 py-20">
+      <div class="max-w-6xl mx-auto px-6 grid lg:grid-cols-2 gap-14 items-center">
+        <div class="order-2 lg:order-1 bg-ink-900 border border-ink-700 rounded-2xl p-7">
+          <div class="flex items-center gap-2 mb-5">
+            <div class="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
+              <UIcon name="i-lucide-sparkles" class="w-4 h-4 text-white" />
             </div>
-            <div class="space-y-3">
-              <div class="bg-white/10 rounded-xl rounded-tl-sm px-4 py-2.5 text-sm max-w-[85%]">
-                Résume l'avancement du projet "Site vitrine" cette semaine.
-              </div>
-              <div class="bg-brand rounded-xl rounded-tr-sm px-4 py-2.5 text-sm max-w-[90%] ml-auto">
-                3 tâches terminées sur 5. La maquette est validée, il reste l'intégration et les tests. Aucun retard signalé.
-              </div>
+            <span class="font-display font-semibold text-sm">Assistant Baobab</span>
+          </div>
+          <div class="space-y-3">
+            <div class="bg-ink-700 rounded-xl rounded-tl-sm px-4 py-2.5 text-sm max-w-[85%]">
+              Résume l'avancement du projet "Site vitrine" cette semaine.
+            </div>
+            <div class="bg-brand rounded-xl rounded-tr-sm px-4 py-2.5 text-sm max-w-[90%] ml-auto">
+              3 tâches terminées sur 5. La maquette est validée, il reste l'intégration et les tests.
             </div>
           </div>
         </div>
 
         <div class="order-1 lg:order-2">
-          <p class="font-mono text-xs text-accent uppercase tracking-wider mb-3">Nouveau</p>
+          <p class="text-xs font-semibold uppercase tracking-widest text-accent mb-3">Nouveau</p>
           <h2 class="font-display font-bold text-3xl mb-5">Un assistant qui connaît vos projets</h2>
-          <p class="text-slate leading-relaxed mb-6">
-            Posez une question en langage naturel sur l'avancement d'un projet, l'état des tâches d'une équipe,
-            ou les documents récemment modifiés. L'assistant répond avec les vraies données de votre entreprise —
-            pas de recherche manuelle dans des dizaines d'écrans.
+          <p class="text-mist leading-relaxed mb-6">
+            Posez une question en langage naturel sur l'avancement d'un projet ou l'état des tâches d'une équipe.
+            L'assistant répond avec les vraies données de votre entreprise.
           </p>
           <ul class="space-y-3">
             <li class="flex items-center gap-2.5 text-sm">
@@ -226,59 +259,53 @@ const stats = [
               <UIcon name="i-lucide-check" class="w-4 h-4 text-success flex-shrink-0" />
               Disponible pour les chefs de projet
             </li>
-            <li class="flex items-center gap-2.5 text-sm">
-              <UIcon name="i-lucide-check" class="w-4 h-4 text-success flex-shrink-0" />
-              Toujours basé sur vos données réelles
-            </li>
           </ul>
         </div>
       </div>
     </section>
 
     <!-- CTA -->
-    <section id="cta" class="bg-ink py-20 text-center relative overflow-hidden">
-      <div class="absolute -top-16 -left-16 w-64 h-64 bg-brand/20 rounded-full"></div>
-      <div class="absolute -bottom-20 -right-16 w-72 h-72 bg-accent/10 rounded-full"></div>
+    <section id="cta" class="py-20 text-center relative overflow-hidden">
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-brand/10 rounded-full blur-3xl"></div>
       <div class="relative z-10">
-        <h2 class="font-display font-bold text-3xl text-white mb-4">Prêt à organiser votre entreprise ?</h2>
-        <p class="text-white/60 mb-8">La création de votre espace prend moins de deux minutes.</p>
-        <NuxtLink to="/register" class="inline-block bg-white text-ink px-7 py-3.5 rounded-lg font-medium hover:bg-brand hover:text-white transition-colors">
+        <h2 class="font-display font-bold text-3xl mb-4">Prêt à organiser votre entreprise ?</h2>
+        <p class="text-mist mb-8">La création de votre espace prend moins de deux minutes.</p>
+        <NuxtLink to="/register" class="inline-block bg-brand text-white px-7 py-3.5 rounded-lg font-medium hover:bg-white hover:text-ink-900 transition-colors">
           Commencer maintenant
         </NuxtLink>
       </div>
     </section>
 
     <!-- Footer -->
-    <footer class="max-w-6xl mx-auto px-6 py-14">
-      <div class="grid md:grid-cols-4 gap-10 mb-10">
+    <footer class="border-t border-ink-700">
+      <div class="max-w-6xl mx-auto px-6 py-14 grid md:grid-cols-4 gap-10">
         <div>
           <div class="flex items-center gap-2 font-display font-bold mb-3">
             <div class="w-6 h-6 bg-brand rounded-md"></div>
             Baobab
           </div>
-          <p class="text-slate text-sm leading-relaxed">La plateforme de gestion collaborative pensée pour les entreprises togolaises.</p>
+          <p class="text-mist text-sm leading-relaxed">La plateforme de gestion collaborative pensée pour les entreprises togolaises.</p>
         </div>
         <div>
           <p class="font-display font-semibold text-sm mb-3">Produit</p>
-          <div class="flex flex-col gap-2 text-sm text-slate">
-            <a href="#roles" class="hover:text-ink">Rôles</a>
-            <a href="#fonctionnalites" class="hover:text-ink">Fonctionnalités</a>
-            <a href="#comment-ca-marche" class="hover:text-ink">Comment ça marche</a>
+          <div class="flex flex-col gap-2 text-sm text-mist">
+            <a href="#roles" class="hover:text-white">Rôles</a>
+            <a href="#fonctionnalites" class="hover:text-white">Fonctionnalités</a>
           </div>
         </div>
         <div>
           <p class="font-display font-semibold text-sm mb-3">Compte</p>
-          <div class="flex flex-col gap-2 text-sm text-slate">
-            <NuxtLink to="/login" class="hover:text-ink">Connexion</NuxtLink>
-            <NuxtLink to="/register" class="hover:text-ink">Créer une entreprise</NuxtLink>
+          <div class="flex flex-col gap-2 text-sm text-mist">
+            <NuxtLink to="/login" class="hover:text-white">Connexion</NuxtLink>
+            <NuxtLink to="/register" class="hover:text-white">Créer une entreprise</NuxtLink>
           </div>
         </div>
         <div>
           <p class="font-display font-semibold text-sm mb-3">Contact</p>
-          <p class="text-slate text-sm">Lomé, Togo</p>
+          <p class="text-mist text-sm">Lomé, Togo</p>
         </div>
       </div>
-      <div class="border-t border-border pt-6 text-center text-slate text-xs">
+      <div class="border-t border-ink-700 py-6 text-center text-mist text-xs">
         © {{ new Date().getFullYear() }} Baobab — Plateforme de gestion d'entreprise
       </div>
     </footer>

@@ -23,7 +23,7 @@ class StoreDocumentPermissionRequest extends FormRequest
 
             'ecriture' => 'required|boolean',
 
-            'suppression' => 'required|boolean',
+            'suppression' => 'nullable|boolean',
 
         ];
     }

@@ -77,7 +77,7 @@ class Document extends Model
     ): bool {
 
         // Le chef de projet possède tous les droits
-        if ($this->projet->chef_projet_id == $userId) {
+        if ($this->projet->user_id == $userId) {
             return true;
         }
 

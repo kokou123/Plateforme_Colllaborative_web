@@ -45,20 +45,15 @@ const onSubmit = handleSubmit(async (values) => {
 <template>
   <div>
     <h1 class="font-display font-bold text-2xl mb-1">Réinitialiser le mot de passe</h1>
-    <p class="text-slate text-sm mb-6">Code envoyé à <strong class="text-ink">{{ email }}</strong></p>
+    <p class="text-mist text-sm mb-7">Code envoyé à <strong class="text-white">{{ email }}</strong></p>
 
     <form @submit="onSubmit" class="space-y-4">
-      <input v-model="otp" placeholder="Code à 6 chiffres" maxlength="6" class="w-full border border-border rounded-lg px-3 py-2.5 text-sm font-mono tracking-widest focus:outline-none focus:border-brand" />
-      <p v-if="errors.otp" class="text-danger text-xs">{{ errors.otp }}</p>
+      <AuthInput v-model="otp" label="Code à 6 chiffres" icon="i-lucide-hash" placeholder="000000" :error="errors.otp" />
+      <AuthInput v-model="password" label="Nouveau mot de passe" type="password" icon="i-lucide-lock" placeholder="8 caractères minimum" :error="errors.password" />
+      <AuthInput v-model="password_confirmation" label="Confirmer le mot de passe" type="password" icon="i-lucide-lock" placeholder="••••••••" :error="errors.password_confirmation" />
 
-      <input v-model="password" type="password" placeholder="Nouveau mot de passe" class="w-full border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-brand" />
-      <p v-if="errors.password" class="text-danger text-xs">{{ errors.password }}</p>
-
-      <input v-model="password_confirmation" type="password" placeholder="Confirmer le mot de passe" class="w-full border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-brand" />
-      <p v-if="errors.password_confirmation" class="text-danger text-xs">{{ errors.password_confirmation }}</p>
-
-      <p v-if="errorMessage" class="text-danger text-sm bg-danger-light rounded-lg px-3 py-2">{{ errorMessage }}</p>
-      <button type="submit" :disabled="loading" class="w-full bg-brand text-white rounded-lg py-2.5 font-medium hover:bg-ink transition-colors disabled:opacity-50">
+      <p v-if="errorMessage" class="text-danger text-sm bg-danger-light/10 border border-danger/20 rounded-lg px-3 py-2">{{ errorMessage }}</p>
+      <button type="submit" :disabled="loading" class="w-full bg-brand text-white rounded-lg py-2.5 font-medium hover:bg-white hover:text-ink-900 transition-colors disabled:opacity-50">
         {{ loading ? 'Réinitialisation...' : 'Réinitialiser' }}
       </button>
     </form>

@@ -139,6 +139,10 @@ Route::middleware([
 
     Route::delete('audit-logs/{auditLog}',[AuditLogController::class,'destroy']);
 
+    Route::get('/entreprise', [EntrepriseController::class, 'show']);
+    
+    Route::put('/entreprise', [EntrepriseController::class, 'update']);
+
 });
 
 Route::middleware([
@@ -191,6 +195,8 @@ Route::middleware([
         'etape-processus/{etapeProcessus}/terminer',
         [EtapeProcessusController::class,'terminer']
     );
+
+    Route::get('/employes', [UserController::class, 'employes']);
 
 });
 

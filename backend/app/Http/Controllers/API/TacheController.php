@@ -25,17 +25,11 @@ class TacheController extends Controller
      */
     public function index()
     {
-        $taches = Tache::with([
-            'projet',
-            'assignee.roles',
-            'commentaires',
-            'historiques'
-        ])->get();
+        $taches = Tache::with(['projet', 'assignee.roles', 'commentaires', 'historiques'])
+            ->whereHas('projet', fn($q) => $q->where('user_id', auth()->id()))
+            ->get();
 
-        return response()->json([
-            'success' => true,
-            'data' => TacheResource::collection($taches),
-        ]);
+        return response()->json(['success' => true, 'data' => TacheResource::collection($taches)]);
     }
 
     /**
@@ -43,7 +37,7 @@ class TacheController extends Controller
      * CRéer une nouvelle tâche
      */ 
     public function store(StoreTacheRequest $request)
-    {
+    {   
         $projet = Projet::findOrFail($request->projet_id);
 
         if ($request->filled('assigned_to')) {
@@ -88,6 +82,9 @@ class TacheController extends Controller
      */
     public function show(Tache $tache)
     {
+         if ($tache->projet->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Accès non autorisé.'], 403);
+        }
         $tache->load([
             'projet',
             'assignee.roles',
@@ -107,6 +104,9 @@ class TacheController extends Controller
      */
     public function update(UpdateTacheRequest $request, Tache $tache)
     {
+        if ($tache->projet->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Accès non autorisé.'], 403);
+        }
         $ancienAssigne = $tache->assigned_to;
         $ancienStatut = $tache->statut;
 
@@ -163,6 +163,9 @@ class TacheController extends Controller
      */
     public function destroy(Tache $tache)
     {
+        if ($tache->projet->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Accès non autorisé.'], 403);
+        }
         $tache->delete();
         AuditLogService::enregistrer
         (
@@ -180,7 +183,10 @@ class TacheController extends Controller
     }
     public function assigner(AssignerTacheRequest $request,Tache $tache)
     
-    {
+    {   
+        if ($tache->projet->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Accès non autorisé.'], 403);
+        }
         $projet = $tache->projet;
 
         if (!$projet->membres()->where('user_id', $request->assigned_to)->exists()) {
@@ -195,14 +201,12 @@ class TacheController extends Controller
             'assigned_to' => $request->assigned_to,
         ]);
 
-            Notification::create([
-        'user_id' => $request->assigned_to,
-        'type' => 'Assignation de tâche',
-        'contenu' => "Une nouvelle tâche vous a été assignée : {$tache->titre}",
-        'lu' => false,
-        
-        ]);
-
+        NotificationService::envoyer(
+            $request->assigned_to,
+            NotificationType::TACHE,
+            "Une nouvelle tâche vous a été assignée : {$tache->titre}",
+            "/taches/".$tache->id
+        );
         return response()->json([
             'success' => true,
             'message' => 'Tâche assignée avec succès.',
@@ -212,7 +216,10 @@ class TacheController extends Controller
         ]);
     }
     public function changerStatut(ChangerStatutTacheRequest $request, Tache $tache)
-    {
+    {   
+        if ($tache->projet->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Accès non autorisé.'], 403);
+        }
         $ancien = $tache->statut;
 
         $tache->update([

@@ -81,17 +81,18 @@ class ProjetController extends Controller
      */
     public function show(Projet $projet)
     {
+        if ($projet->chefProjet->entreprise_id !== auth()->user()->entreprise_id) {
+            return response()->json(['message' => 'Accès non autorisé.'], 403);
+        }
+
         $projet->load([
             'chefProjet.roles',
             'membres.roles',
-            'taches',
+            'taches.assignee',
             'documents'
         ]);
 
-        return response()->json([
-            'success' => true,
-            'data' => new ProjetResource($projet)
-        ]);
+        return response()->json(['success' => true, 'data' => new ProjetResource($projet)]);
     }
 
     /**

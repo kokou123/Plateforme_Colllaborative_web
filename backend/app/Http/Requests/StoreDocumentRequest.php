@@ -21,7 +21,7 @@ class StoreDocumentRequest extends FormRequest
 
             'projet_id' => 'required|exists:projets,id',
 
-            'user_id' => 'required|exists:users,id',
+            //'user_id' => 'required|exists:users,id',
 
         ];
     }

@@ -78,25 +78,15 @@ class DashboardController extends Controller
             ],
 
             'projets'=>[
-
-                'en_attente'=>Projet::where('statut','en_attente')->count(),
-
-                'en_cours'=>Projet::where('statut','en_cours')->count(),
-
-                'termines'=>Projet::where('statut','termine')->count()
-
+                'en_attente'=>Projet::where('statut','À faire')->count(),
+                'en_cours'=>Projet::where('statut','En cours')->count(),
+                'termines'=>Projet::where('statut','Terminé')->count()
             ],
-
             'taches'=>[
-
-                'en_attente'=>Tache::where('statut','en_attente')->count(),
-
-                'en_cours'=>Tache::where('statut','en_cours')->count(),
-
-                'terminees'=>Tache::where('statut','terminee')->count()
-
+                'en_attente'=>Tache::where('statut','À faire')->count(),
+                'en_cours'=>Tache::where('statut','En cours')->count(),
+                'terminees'=>Tache::where('statut','Terminée')->count()
             ],
-
             'notifications'=>[
 
                 'lues'=>Notification::where('lu',true)->count(),
@@ -121,8 +111,7 @@ class DashboardController extends Controller
     {
         $chef = auth()->user();
 
-        $projets = Projet::where('chef_projet_id',$chef->id)->pluck('id');
-
+        $projets = Projet::where('user_id', $chef->id)->pluck('id');    
         return response()->json([
 
             'utilisateur' => [
@@ -136,23 +125,9 @@ class DashboardController extends Controller
 
             'mes_taches'=>Tache::whereIn('projet_id',$projets)->count(),
 
-            'taches_en_attente'=>Tache::whereIn('projet_id',$projets)
-
-                ->where('statut','en_attente')
-
-                ->count(),
-
-            'taches_en_cours'=>Tache::whereIn('projet_id',$projets)
-
-                ->where('statut','en_cours')
-
-                ->count(),
-
-            'taches_terminees'=>Tache::whereIn('projet_id',$projets)
-
-                ->where('statut','terminee')
-
-                ->count(),
+            'taches_en_attente'=>Tache::whereIn('projet_id',$projets)->where('statut','À faire')->count(),
+            'taches_en_cours'=>Tache::whereIn('projet_id',$projets)->where('statut','En cours')->count(),
+            'taches_terminees'=>Tache::whereIn('projet_id',$projets)->where('statut','Terminée')->count(),
 
             'documents'=>Document::whereIn('projet_id',$projets)->count(),
 
@@ -182,23 +157,9 @@ class DashboardController extends Controller
 
             'mes_taches'=>Tache::where('assigned_to',$user->id)->count(),
 
-            'en_attente'=>Tache::where('assigned_to',$user->id)
-
-                ->where('statut','en_attente')
-
-                ->count(),
-
-            'en_cours'=>Tache::where('assigned_to',$user->id)
-
-                ->where('statut','en_cours')
-
-                ->count(),
-
-            'terminees'=>Tache::where('assigned_to',$user->id)
-
-                ->where('statut','terminee')
-
-                ->count(),
+            'en_attente'=>Tache::where('assigned_to',$user->id)->where('statut','À faire')->count(),
+            'en_cours'=>Tache::where('assigned_to',$user->id)->where('statut','En cours')->count(),
+            'terminees'=>Tache::where('assigned_to',$user->id)->where('statut','Terminée')->count(),
 
             'notifications'=>Notification::where('user_id',$user->id)
 

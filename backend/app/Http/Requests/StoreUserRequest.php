@@ -23,8 +23,8 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nom' => 'required|string|max:100',
-            'prenom' => 'required|string|max:100',
+            'nom' => ['required', 'string', 'max:100', 'regex:/^[\pL\s\'\-\/]+$/u'],
+            'prenom' => ['required', 'string', 'max:100', 'regex:/^[\pL\s\'\-\/]+$/u'],
             'email' => 'required|email|unique:users,email',
             'role' => 'required|exists:roles,name',
             'photo' => 'nullable|image|max:2048',
@@ -58,6 +58,10 @@ class StoreUserRequest extends FormRequest
             'photo.mimes' => 'Formats autorisés : jpg, jpeg, png.',
 
             'photo.max' => 'La taille maximale est de 2 Mo.',
+
+            'nom.regex' => 'Le nom ne doit contenir que des lettres.',
+            
+            'prenom.regex' => 'Le prénom ne doit contenir que des lettres.',
         ];
     }
 

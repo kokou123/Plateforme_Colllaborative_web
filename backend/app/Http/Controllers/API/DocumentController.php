@@ -14,21 +14,41 @@ use App\Services\AuditLogService;
 
 class DocumentController extends Controller
 {
+    private function estChefProjet(Document $document): bool
+    {
+        return $document->projet->user_id == auth()->id();
+    }
+
+    private function estProprietaire(Document $document): bool
+    {
+        return $document->user_id == auth()->id();
+    }
+
+    private function peutLire(Document $document): bool
+    {
+        if ($this->estChefProjet($document) || $this->estProprietaire($document)) return true;
+        return $document->utilisateurPossedePermission(auth()->id(), 'lecture')
+            || $document->utilisateurPossedePermission(auth()->id(), 'ecriture');
+    }
+
+    private function peutModifier(Document $document): bool
+    {
+        if ($this->estChefProjet($document) || $this->estProprietaire($document)) return true;
+        return $document->utilisateurPossedePermission(auth()->id(), 'ecriture');
+    }
     /**
      * Liste des documents.
      */
+    // DocumentController::index()
     public function index()
     {
-        $documents = Document::with([
-            'projet',
-            'utilisateur',
-            'versions'
-        ])->get();
+        $documents = Document::with(['projet', 'utilisateur', 'versions'])
+            ->whereHas('projet.chefProjet', function ($q) {
+                $q->where('entreprise_id', auth()->user()->entreprise_id);
+            })
+            ->get();
 
-        return response()->json([
-            'success' => true,
-            'data' => DocumentResource::collection($documents)
-        ]);
+        return response()->json(['success' => true, 'data' => DocumentResource::collection($documents)]);
     }
 
     /**
@@ -95,6 +115,9 @@ class DocumentController extends Controller
      */
     public function update(UpdateDocumentRequest $request, Document $document)
     {
+        if (!$this->peutModifier($document)) {
+            return response()->json(['message' => 'Vous n\'avez pas le droit de modifier ce document.'], 403);
+        }
         $document->update($request->validated());
 
         AuditLogService::enregistrer(
@@ -118,7 +141,10 @@ class DocumentController extends Controller
      * Supprimer un document.
      */
     public function destroy(Document $document)
-    {
+    {   
+        if (!$this->estChefProjet($document)) {
+            return response()->json(['message' => 'Seul le chef de projet peut supprimer un document.'], 403);
+        }
         if (Storage::disk('public')->exists($document->chemin)) {
 
             Storage::disk('public')->delete($document->chemin);
@@ -130,7 +156,6 @@ class DocumentController extends Controller
             Storage::disk('public')->delete($version->chemin);
 
         }
-
         }
         $document->delete();
         AuditLogService::enregistrer(
@@ -152,6 +177,9 @@ class DocumentController extends Controller
      */
     public function download(Document $document)
     {
+        if (!$this->peutLire($document)) {
+            return response()->json(['message' => 'Accès non autorisé à ce document.'], 403);
+        }
         if (!Storage::disk('public')->exists($document->chemin)) {
 
             return response()->json([
@@ -164,5 +192,12 @@ class DocumentController extends Controller
             $document->chemin,
             $document->nom . '.' . $document->type
         );
+    }
+    public function show(Document $document)
+    {
+        if (!$this->peutLire($document)) {
+            return response()->json(['message' => 'Accès non autorisé à ce document.'], 403);
+        }
+        return response()->json(['success' => true, 'data' => new DocumentResource($document->load('projet', 'utilisateur', 'versions'))]);
     }
 }

@@ -30,22 +30,22 @@ const onSubmit = handleSubmit(async (values) => {
 
 <template>
   <div>
+    <div class="w-14 h-14 bg-accent/15 rounded-2xl flex items-center justify-center mb-5">
+      <UIcon name="i-lucide-key-round" class="w-7 h-7 text-accent" />
+    </div>
     <h1 class="font-display font-bold text-2xl mb-1">Mot de passe oublié</h1>
-    <p class="text-slate text-sm mb-6">Recevez un code pour réinitialiser votre mot de passe.</p>
+    <p class="text-mist text-sm mb-7">Recevez un code pour réinitialiser votre mot de passe.</p>
 
     <form @submit="onSubmit" class="space-y-4">
-      <div>
-        <input v-model="email" placeholder="Email" class="w-full border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-brand" />
-        <p v-if="errors.email" class="text-danger text-xs mt-1">{{ errors.email }}</p>
-      </div>
-      <p v-if="errorMessage" class="text-danger text-sm bg-danger-light rounded-lg px-3 py-2">{{ errorMessage }}</p>
-      <button type="submit" :disabled="loading" class="w-full bg-brand text-white rounded-lg py-2.5 font-medium hover:bg-ink transition-colors disabled:opacity-50">
+      <AuthInput v-model="email" label="Email" icon="i-lucide-mail" placeholder="vous@entreprise.com" :error="errors.email" />
+      <p v-if="errorMessage" class="text-danger text-sm bg-danger-light/10 border border-danger/20 rounded-lg px-3 py-2">{{ errorMessage }}</p>
+      <button type="submit" :disabled="loading" class="w-full bg-brand text-white rounded-lg py-2.5 font-medium hover:bg-white hover:text-ink-900 transition-colors disabled:opacity-50">
         {{ loading ? 'Envoi...' : 'Envoyer le code' }}
       </button>
     </form>
 
-    <p class="text-center text-sm text-slate mt-6">
-      <NuxtLink to="/login" class="text-brand font-medium">Retour à la connexion</NuxtLink>
+    <p class="text-center text-sm text-mist mt-7">
+      <NuxtLink to="/login" class="text-brand font-medium hover:text-white transition-colors">Retour à la connexion</NuxtLink>
     </p>
   </div>
 </template>

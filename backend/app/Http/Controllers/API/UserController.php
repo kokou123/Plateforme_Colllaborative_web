@@ -142,22 +142,43 @@ class UserController
      * Remove the specified resource from storage.
      */
     public function destroy(User $user)
-    {   
-        if ($user->entreprise_id !== auth()->user()->entreprise_id) 
-        {
+    {
+        if ($user->entreprise_id !== auth()->user()->entreprise_id) {
             return response()->json(['message' => 'Accès non autorisé.'], 403);
         }
+
+        if ($user->hasRole('Admin')) {
+            return response()->json([
+                'message' => 'Impossible de supprimer un administrateur.'
+            ], 422);
+        }
+
+        if ($user->hasRole('Chef de projet') && $user->projetsCrees()->exists()) {
+            return response()->json([
+                'message' => 'Ce chef de projet a des projets actifs. Réassignez-les avant de le supprimer.'
+            ], 422);
+        }
+
+        if ($user->hasRole('Employé') && ($user->tachesAssignees()->exists() || $user->projets()->exists())) {
+            return response()->json([
+                'message' => 'Cet employé est encore lié à des tâches ou projets. Retirez-le avant de le supprimer.'
+            ], 422);
+        }
+
         $user->delete();
-        AuditLogService::enregistrer(
-        auth()->id(),
-        'Suppression',
-        'Utilisateur',
-        $user->id,
-        "Suppression de {$user->nom}"
-    );
+        AuditLogService::enregistrer(auth()->id(), 'Suppression', 'Utilisateur', $user->id, "Suppression de {$user->nom}");
+
+        return response()->json(['success' => true, 'message' => 'Utilisateur supprimé avec succès.']);
+    }
+    public function employes()
+    {
+        $employes = User::role('Employé')
+            ->where('entreprise_id', auth()->user()->entreprise_id)
+            ->get();
+
         return response()->json([
             'success' => true,
-            'message' => 'Utilisateur supprimé avec succès.'
+            'data' => UserResource::collection($employes),
         ]);
     }
 }

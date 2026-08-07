@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateVersionDocumentRequest;
 use App\Http\Resources\VersionDocumentResource;
 use App\Models\Document;
 use App\Models\VersionDocument;
+use App\Services\AuditLogService;
 use Illuminate\Support\Facades\Storage;
 
 class VersionDocumentController extends Controller
@@ -17,17 +18,16 @@ class VersionDocumentController extends Controller
      * Display a listing of the resource.
      * lister les versions d'un doc
      */
+    // VersionDocumentController::index()
     public function index()
     {
-        $versions = VersionDocument::with([
-            'document',
-            'utilisateur'
-        ])->get();
+        $versions = VersionDocument::with(['document', 'utilisateur'])
+            ->whereHas('document.projet.chefProjet', function ($q) {
+                $q->where('entreprise_id', auth()->user()->entreprise_id);
+            })
+            ->get();
 
-        return response()->json([
-            'success'=>true,
-            'data'=>VersionDocumentResource::collection($versions)
-        ]);
+        return response()->json(['success' => true, 'data' => VersionDocumentResource::collection($versions)]);
     }
     /**
      * Store a newly created resource in storage.
@@ -130,25 +130,18 @@ class VersionDocumentController extends Controller
     
     public function destroy(VersionDocument $versionDocument)
     {
-        if(Storage::disk('public')->exists($versionDocument->chemin))
-        {
+        if (Storage::disk('public')->exists($versionDocument->chemin)) {
             Storage::disk('public')->delete($versionDocument->chemin);
         }
 
-        $versionDocument->delete();
-
         AuditLogService::enregistrer(
-        auth()->id(),
-        'Suppression Version',
-        'VersionDocument',
-        $version->id,
-        "Suppression la version {$version->numero}."
+            auth()->id(), 'Suppression Version', 'VersionDocument',
+            $versionDocument->id, "Suppression la version {$versionDocument->numero}."
         );
 
-        return response()->json([
-            'success'=>true,
-            'message'=>'Version supprimée.'
-        ]);
+        $versionDocument->delete();
+
+        return response()->json(['success' => true, 'message' => 'Version supprimée.']);
     }
     public function download(VersionDocument $versionDocument)
     {

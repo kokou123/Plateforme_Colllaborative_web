@@ -40,12 +40,10 @@ class User extends Authenticatable
         {
             return $this->belongsToMany(Projet::class);
         }
-
         public function projetsCrees()
         {
-            return $this->hasMany(Projet::class, 'chef_projet_id');
+            return $this->hasMany(Projet::class, 'user_id'); 
         }
-
         public function tachesAssignees()
         {
             return $this->hasMany(Tache::class, 'assigned_to');
@@ -82,4 +80,5 @@ class User extends Authenticatable
         {
             return $this->belongsTo(Entreprise::class);
         }
+        
 }
